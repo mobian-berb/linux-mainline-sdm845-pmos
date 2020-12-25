@@ -458,6 +458,10 @@
 	status = "okay";
 };
 
+&pmi8998_fg {
+	status = "okay";
+};
+
 &qupv3_id_1 {
 	status = "okay";
 };
