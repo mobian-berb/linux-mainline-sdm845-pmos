@@ -7,6 +7,7 @@
 #include <dt-bindings/clock/qcom,mmcc-msm8996.h>
 #include <dt-bindings/clock/qcom,rpmcc.h>
 #include <dt-bindings/soc/qcom,apr.h>
+#include <dt-bindings/thermal/thermal.h>
 
 / {
 	interrupt-parent = <&intc>;
@@ -788,7 +789,7 @@
 					      "ref";
 			};
 		};
-		gpu@b00000 {
+		gpu: gpu@b00000 {
 			compatible = "qcom,adreno-530.2", "qcom,adreno";
 			#stream-id-cells = <16>;
 
@@ -819,6 +820,8 @@
 			qcom,gpu-quirk-fault-detect-mask;
 
 			operating-points-v2 = <&gpu_opp_table>;
+
+			#cooling-cells = <2>;
 
 			gpu_opp_table: opp-table {
 				compatible  ="operating-points-v2";
@@ -2606,7 +2609,14 @@
 				gpu1_alert0: trip-point0 {
 					temperature = <90000>;
 					hysteresis = <2000>;
-					type = "hot";
+					type = "passive";
+				};
+			};
+
+			cooling-maps {
+				map0 {
+					trip = <&gpu1_alert0>;
+					cooling-device = <&gpu THERMAL_NO_LIMIT THERMAL_NO_LIMIT>;
 				};
 			};
 		};
@@ -2621,7 +2631,14 @@
 				gpu2_alert0: trip-point0 {
 					temperature = <90000>;
 					hysteresis = <2000>;
-					type = "hot";
+					type = "passive";
+				};
+			};
+
+			cooling-maps {
+				map0 {
+					trip = <&gpu2_alert0>;
+					cooling-device = <&gpu THERMAL_NO_LIMIT THERMAL_NO_LIMIT>;
 				};
 			};
 		};
