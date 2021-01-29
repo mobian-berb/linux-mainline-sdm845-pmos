@@ -456,6 +456,12 @@
 	linux,code = <KEY_VOLUMEDOWN>;
 };
 
+&slpi_pil {
+	status = "okay";
+
+	px-supply = <&vreg_lvs2a_1p8>;
+};
+
 &sound {
 	compatible = "qcom,apq8096-sndcard";
 	model = "Xiaomi Mi Note 2";
