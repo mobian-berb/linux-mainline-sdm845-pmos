@@ -58,6 +58,12 @@
 				linux,code = <KEY_POWER>;
 			};
 
+			resin: resin {
+				compatible = "qcom,pm8941-resin";
+				interrupts = <0x0 0x8 1 IRQ_TYPE_EDGE_BOTH>;
+				debounce = <15625>;
+				bias-pull-up;
+			};
 		};
 
 		pm8994_temp: temp-alarm@2400 {
