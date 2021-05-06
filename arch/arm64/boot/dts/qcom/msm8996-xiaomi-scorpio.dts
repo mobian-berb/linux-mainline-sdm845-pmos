@@ -248,6 +248,10 @@
 	};
 };
 
+&adsp_pil {
+	status = "okay";
+};
+
 &blsp2_i2c1 {
 	status = "okay";
 

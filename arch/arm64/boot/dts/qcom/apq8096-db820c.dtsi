@@ -133,6 +133,10 @@
 	};
 };
 
+&adsp_pil {
+	status = "okay";
+};
+
 &blsp1_i2c2 {
 	/* On Low speed expansion */
 	label = "LS-I2C0";
