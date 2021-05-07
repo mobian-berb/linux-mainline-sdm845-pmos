@@ -363,7 +363,7 @@
 	vdd-gfx-supply = <&vdd_gfx>;
 };
 
-&modem {
+&mss_pil {
 	status = "okay";
 
 	pll-supply = <&vreg_l12a_1p8>;
@@ -852,7 +852,7 @@
 	};
 };
 
-&slpi {
+&slpi_pil {
 	status = "okay";
 };
 

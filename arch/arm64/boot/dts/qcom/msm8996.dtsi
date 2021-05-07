@@ -1461,7 +1461,7 @@
 			clock-names = "iface", "bus";
 		};
 
-		slpi: remoteproc-slpi@1c00000 {
+		slpi_pil: remoteproc-slpi@1c00000 {
 			compatible = "qcom,msm8996-slpi-pil";
 			reg = <0x01c00000 0x4000>;
 
@@ -2487,7 +2487,7 @@
 			interrupts = <GIC_PPI 9 IRQ_TYPE_LEVEL_HIGH>;
 		};
 
-		modem: remoteproc@2080000 {
+		mss_pil: remoteproc@2080000 {
 			compatible = "qcom,msm8996-mss-pil";
 
 			reg = <0x02080000 0x100>,
