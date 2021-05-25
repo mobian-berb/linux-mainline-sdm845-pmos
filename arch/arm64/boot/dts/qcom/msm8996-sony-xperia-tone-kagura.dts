@@ -14,6 +14,10 @@
 	compatible = "sony,kagura-row", "qcom,msm8996";
 };
 
+&panel {
+	compatible = "sony,synaptics-jdi-kagura";
+};
+
 &gpu {
 	zap-shader {
 		firmware-name = "qcom/msm8996/kagura/a530_zap.mbn";
