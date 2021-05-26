@@ -508,7 +508,8 @@
 };
 
 &slpi_pil {
-	status = "okay";
+	/* Enabling breaks SLIMBus. Disable for now since it is not used anyway */
+	status = "disabled";
 
 	px-supply = <&vreg_lvs2a_1p8>;
 };
