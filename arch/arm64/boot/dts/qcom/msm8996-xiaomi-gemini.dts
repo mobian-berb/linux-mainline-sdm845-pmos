@@ -142,6 +142,10 @@
 	monitored-battery = <&battery>;
 };
 
+&pmi8994_smbchg {
+	monitored-battery = <&battery>;
+};
+
 &pmi8994_wled {
 	status = "okay";
 };

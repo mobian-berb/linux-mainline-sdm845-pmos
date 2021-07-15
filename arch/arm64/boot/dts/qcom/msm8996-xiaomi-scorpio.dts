@@ -197,6 +197,10 @@
 	qcom,vmax-mv = <2830>;
 };
 
+&pmi8994_smbchg {
+	monitored-battery = <&battery>;
+};
+
 &pm8994_lpg {
 	status = "okay";
 
