@@ -11,6 +11,18 @@
 		#address-cells = <1>;
 		#size-cells = <0>;
 
+		pmi8994_smbchg: charger@1000 {
+			compatible = "qcom,pmi8994-smbcharger";
+			reg = <0x1000>;
+
+			interrupts = <0x2 0x13 0x6 IRQ_TYPE_EDGE_FALLING>;
+			interrupt-names = "usbid-change";
+
+			status = "disabled";
+
+			chg_otg: otg-vbus { };
+		};
+
 		pmi8994_fg: fuel-gauge@4000 {
 			compatible = "qcom,pmi8994-fg";
 			reg = <0x4000>;
