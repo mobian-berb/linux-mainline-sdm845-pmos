@@ -83,6 +83,7 @@ struct minidump_global_toc {
 
 struct qcom_ssr_subsystem {
 	const char *name;
+	enum qcom_ssr_notify_type current_state;
 	struct srcu_notifier_head notifier_list;
 	struct list_head list;
 };
@@ -371,6 +372,27 @@ out:
 }
 
 /**
+ * qcom_register_get_state() - get current state of remoteproc
+ * @name:	Subsystem's SSR name
+ *
+ * This gets the current state of a remoteproc associated with @name (pre/post
+ * startup and pre/post shutdown).
+ *
+ * Return: enum qcom_ssr_notify_type on success, negative errno on failure.
+ */
+int qcom_ssr_get_state(const char *name)
+{
+	struct qcom_ssr_subsystem *info;
+
+	info = qcom_ssr_get_subsys(name);
+	if (IS_ERR(info))
+		return PTR_ERR(info);
+
+	return info->current_state;
+}
+EXPORT_SYMBOL_GPL(qcom_ssr_get_state);
+
+/**
  * qcom_register_ssr_notifier() - register SSR notification handler
  * @name:	Subsystem's SSR name
  * @nb:		notifier_block to be invoked upon subsystem's state change
@@ -422,6 +444,7 @@ static int ssr_notify_prepare(struct rproc_subdev *subdev)
 
 	srcu_notifier_call_chain(&ssr->info->notifier_list,
 				 QCOM_SSR_BEFORE_POWERUP, &data);
+	ssr->info->current_state = QCOM_SSR_BEFORE_POWERUP;
 	return 0;
 }
 
@@ -435,6 +458,7 @@ static int ssr_notify_start(struct rproc_subdev *subdev)
 
 	srcu_notifier_call_chain(&ssr->info->notifier_list,
 				 QCOM_SSR_AFTER_POWERUP, &data);
+	ssr->info->current_state = QCOM_SSR_AFTER_POWERUP;
 	return 0;
 }
 
@@ -448,6 +472,7 @@ static void ssr_notify_stop(struct rproc_subdev *subdev, bool crashed)
 
 	srcu_notifier_call_chain(&ssr->info->notifier_list,
 				 QCOM_SSR_BEFORE_SHUTDOWN, &data);
+	ssr->info->current_state = QCOM_SSR_BEFORE_SHUTDOWN;
 }
 
 static void ssr_notify_unprepare(struct rproc_subdev *subdev)
@@ -460,6 +485,7 @@ static void ssr_notify_unprepare(struct rproc_subdev *subdev)
 
 	srcu_notifier_call_chain(&ssr->info->notifier_list,
 				 QCOM_SSR_AFTER_SHUTDOWN, &data);
+	ssr->info->current_state = QCOM_SSR_AFTER_SHUTDOWN;
 }
 
 /**
@@ -484,6 +510,7 @@ void qcom_add_ssr_subdev(struct rproc *rproc, struct qcom_rproc_ssr *ssr,
 	}
 
 	ssr->info = info;
+	ssr->info->current_state = QCOM_SSR_BEFORE_POWERUP;
 	ssr->subdev.prepare = ssr_notify_prepare;
 	ssr->subdev.start = ssr_notify_start;
 	ssr->subdev.stop = ssr_notify_stop;
