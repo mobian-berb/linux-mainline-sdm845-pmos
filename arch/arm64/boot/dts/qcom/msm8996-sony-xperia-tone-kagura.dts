@@ -13,3 +13,13 @@
 	model = "Sony Xperia XZ";
 	compatible = "sony,kagura-row", "qcom,msm8996";
 };
+
+&gpu {
+	zap-shader {
+		firmware-name = "qcom/msm8996/kagura/a530_zap.mbn";
+	};
+};
+
+&venus {
+	firmware-name = "qcom/msm8996/kagura/venus.mbn";
+};
