@@ -89,6 +89,20 @@
 };
 
 &blsp2_i2c6 {
+	touchkeys: cypress-sf@28 {
+		compatible = "cypress,sf3155";
+		reg = <0x28>;
+		interrupt-parent = <&tlmm>;
+		interrupts = <77 IRQ_TYPE_EDGE_FALLING>;
+		avdd-supply = <&vreg_l6a_1p8>;
+		vdd-supply = <&vdd_3v2_tp>;
+		linux,keycodes = <KEY_BACK KEY_MENU>;
+
+		pinctrl-names = "default", "sleep";
+		pinctrl-0 = <&touchkeys_default>;
+		pinctrl-1 = <&touchkeys_sleep>;
+	};
+
 	touchscreen: atmel-mxt-ts@4a {
 		compatible = "atmel,maxtouch";
 		reg = <0x4a>;
@@ -476,6 +490,20 @@
 		"RFFE2_CLK",		/* GPIO_147 */
 		"RFFE1_DATA",		/* GPIO_148 */
 		"RFFE1_CLK";		/* GPIO_149 */
+
+	touchkeys_default: touchkeys_default {
+		pins = "gpio77";
+		function = "gpio";
+		drive-strength = <16>;
+		bias-pull-up;
+	};
+
+	touchkeys_sleep: touchkeys_sleep {
+		pins = "gpio77";
+		function = "gpio";
+		drive-strength = <2>;
+		bias-disable;
+	};
 
 	touchscreen_default: touchscreen_default {
 		pins = "gpio75", "gpio125";
