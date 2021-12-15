@@ -502,6 +502,7 @@ int ab8500_bm_of_probe(struct device *dev,
 		dev_err(dev, "battery node or reference missing\n");
 		return -EINVAL;
 	}
+	bi = bm->bi;
 
 	btech = of_get_property(battery_node, "stericsson,battery-type", NULL);
 	if (!btech) {

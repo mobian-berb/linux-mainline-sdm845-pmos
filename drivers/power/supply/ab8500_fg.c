@@ -2167,11 +2167,13 @@ static int ab8500_fg_get_ext_psy_data(struct device *dev, void *data)
 	struct power_supply *ext = dev_get_drvdata(dev);
 	const char **supplicants = (const char **)ext->supplied_to;
 	struct ab8500_fg *di;
+	struct power_supply_battery_info *bi;
 	union power_supply_propval ret;
 	int j;
 
 	psy = (struct power_supply *)data;
 	di = power_supply_get_drvdata(psy);
+	bi = di->bm->bi;
 
 	/*
 	 * For all psy where the name of your driver

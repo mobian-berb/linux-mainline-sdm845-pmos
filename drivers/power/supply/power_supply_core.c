@@ -563,13 +563,18 @@ EXPORT_SYMBOL_GPL(devm_power_supply_get_by_phandle);
 #endif /* CONFIG_OF */
 
 int power_supply_get_battery_info(struct power_supply *psy,
-				  struct power_supply_battery_info *info)
+				  struct power_supply_battery_info **info_out)
 {
 	struct power_supply_resistance_temp_table *resist_table;
+	struct power_supply_battery_info *info;
 	struct device_node *battery_np;
 	const char *value;
 	int err, len, index;
 	const __be32 *list;
+
+	info = devm_kmalloc(&psy->dev, sizeof(*info), GFP_KERNEL);
+	if (!info)
+		return -ENOMEM;
 
 	info->technology                     = POWER_SUPPLY_TECHNOLOGY_UNKNOWN;
 	info->energy_full_design_uwh         = -EINVAL;
@@ -580,6 +585,10 @@ int power_supply_get_battery_info(struct power_supply *psy,
 	info->charge_term_current_ua         = -EINVAL;
 	info->constant_charge_current_max_ua = -EINVAL;
 	info->constant_charge_voltage_max_uv = -EINVAL;
+	info->tricklecharge_current_ua       = -EINVAL;
+	info->precharge_voltage_max_uv       = -EINVAL;
+	info->charge_restart_voltage_uv      = -EINVAL;
+	info->overvoltage_limit_uv           = -EINVAL;
 	info->temp_ambient_alert_min         = INT_MIN;
 	info->temp_ambient_alert_max         = INT_MAX;
 	info->temp_alert_min                 = INT_MIN;
@@ -727,7 +736,7 @@ int power_supply_get_battery_info(struct power_supply *psy,
 
 	list = of_get_property(battery_np, "resistance-temp-table", &len);
 	if (!list || !len)
-		goto out_put_node;
+		goto out_ret_pointer;
 
 	info->resist_table_size = len / (2 * sizeof(__be32));
 	resist_table = info->resist_table = devm_kcalloc(&psy->dev,
@@ -744,6 +753,10 @@ int power_supply_get_battery_info(struct power_supply *psy,
 		resist_table[index].temp = be32_to_cpu(*list++);
 		resist_table[index].resistance = be32_to_cpu(*list++);
 	}
+
+out_ret_pointer:
+	/* Finally return the whole thing */
+	*info_out = info;
 
 out_put_node:
 	of_node_put(battery_np);
@@ -763,6 +776,8 @@ void power_supply_put_battery_info(struct power_supply *psy,
 
 	if (info->resist_table)
 		devm_kfree(&psy->dev, info->resist_table);
+
+	devm_kfree(&psy->dev, info);
 }
 EXPORT_SYMBOL_GPL(power_supply_put_battery_info);
 
