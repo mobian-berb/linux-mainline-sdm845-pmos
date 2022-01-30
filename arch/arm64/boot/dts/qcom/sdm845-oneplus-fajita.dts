@@ -65,6 +65,10 @@
 	monitored-battery = <&battery>;
 };
 
+&bq27411 {
+	monitored-battery = <&battery>;
+};
+
 &rmi4_f12 {
 	touchscreen-y-mm = <148>;
 };

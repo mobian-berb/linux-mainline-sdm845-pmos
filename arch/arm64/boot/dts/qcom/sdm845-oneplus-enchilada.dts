@@ -39,6 +39,10 @@
 	monitored-battery = <&battery>;
 };
 
+&bq27411 {
+	monitored-battery = <&battery>;
+};
+
 &i2c4 {
 	status = "okay";
 	clock-frequency = <400000>;

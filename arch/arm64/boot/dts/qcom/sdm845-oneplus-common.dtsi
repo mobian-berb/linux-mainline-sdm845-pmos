@@ -376,6 +376,14 @@
 	};
 };
 
+&i2c10 {
+	bq27411: battery@55 {
+		compatible = "ti,bq27411";
+		reg = <0x55>;
+		status = "ok";
+	};
+};
+
 &i2c12 {
 	status = "okay";
 	clock-frequency = <400000>;
