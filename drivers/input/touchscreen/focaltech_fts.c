@@ -148,8 +148,8 @@ struct fts_ts_data {
 	struct pinctrl *pinctrl;
 
 	// DT data
-	struct gpio_desc *irq_gpio;
-	struct gpio_desc *reset_gpio;
+	u32 irq_gpio;
+	u32 reset_gpio;
 	u32 width;
 	u32 height;
 };
@@ -596,11 +596,43 @@ err_out:
 
 static int fts_reset(struct fts_ts_data *data)
 {
-	gpiod_set_value_cansleep(data->reset_gpio, 0);
-	msleep(20);
-	gpiod_set_value_cansleep(data->reset_gpio, 1);
+	int ret = 0;	
+	/* request irq gpio */	
+	if (gpio_is_valid(data->irq_gpio)) {	
+		ret = gpio_request(data->irq_gpio, "fts_irq_gpio");	
+		if (ret < 0) {	
+			dev_err(&data->client->dev, "Failed to request IRQ GPIO");	
+			goto err_irq_gpio_req;	
+		}	
+		ret = gpio_direction_input(data->irq_gpio);	
+		if (ret < 0) {	
+			dev_err(&data->client->dev, "gpio_direction_input for IRQ gpio failed");	
+			goto err_irq_gpio_dir;	
+		}	
+	}	
+	/* request reset gpio */	
+	if (gpio_is_valid(data->reset_gpio)) {	
+		ret = gpio_request(data->reset_gpio, "fts_reset_gpio");	
+		if (ret < 0) {	
+			dev_err(&data->client->dev, "Failed to request reset GPIO");	
+			goto err_irq_gpio_dir;	
+		}	
+		ret = gpio_direction_output(data->reset_gpio, 1);	
+		if (ret < 0) {	
+			dev_err(&data->client->dev, "gpio_direction_output for reset GPIO failed");	
+			goto err_reset_gpio_dir;	
+		}	
+	}	
+	return 0;	
 
-	return 0;
+err_reset_gpio_dir:	
+	if (gpio_is_valid(data->reset_gpio))	
+		gpio_free(data->reset_gpio);	
+err_irq_gpio_dir:	
+	if (gpio_is_valid(data->irq_gpio))	
+		gpio_free(data->irq_gpio);	
+err_irq_gpio_req:	
+	return ret;
 }
 
 static int fts_parse_dt(struct fts_ts_data *data)
@@ -634,13 +666,14 @@ static int fts_parse_dt(struct fts_ts_data *data)
 	}
 	data->max_touch_number = val;
 
-	data->reset_gpio = devm_gpiod_get(dev, "reset", GPIOD_OUT_LOW);
-	if (data->reset_gpio < 0) {
-		dev_err(&data->client->dev, "Unable to get reset gpio");
-		return -EINVAL;
-	}
+	/* reset, irq gpio info */	
+	data->reset_gpio = of_get_named_gpio(np, "focaltech,reset-gpio", 0);	
+	if (data->reset_gpio < 0)	
+		dev_err(&data->client->dev, "Unable to get reset_gpio");	
 
-	data->irq_gpio = devm_gpiod_get_optional(dev, "irq", GPIOD_OUT_LOW);
+	data->irq_gpio = of_get_named_gpio(np, "focaltech,irq-gpio", 0);	
+	if (data->irq_gpio < 0)	
+		dev_err(&data->client->dev, "Unable to get irq_gpio");
 
 	return 0;
 }
@@ -719,7 +752,7 @@ static int fts_ts_probe(struct i2c_client *client,
 	}
 
 	if (data->irq_gpio) {
-		data->irq = gpiod_to_irq(data->irq_gpio);
+		data->irq = gpio_to_irq(data->irq_gpio);
 
 		ret = request_threaded_irq(data->irq, NULL, fts_ts_interrupt,
 					IRQF_ONESHOT,
