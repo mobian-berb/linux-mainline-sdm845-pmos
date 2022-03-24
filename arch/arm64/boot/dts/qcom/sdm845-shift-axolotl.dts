@@ -470,6 +470,10 @@
 &i2c5 {
 	status="okay";
 
+	dmas =  <&gpi_dma1 0 6 QCOM_GPI_I2C>,
+			<&gpi_dma1 1 6 QCOM_GPI_I2C>;
+	dma-names = "tx", "rx";
+
 	touchscreen@38 {
 		compatible = "focaltech,fts8719";
 		reg = <0x38>;
@@ -483,8 +487,8 @@
 		pinctrl-0 = <&ts_int_active &ts_reset_active>;
 		pinctrl-1 = <&ts_int_suspend &ts_reset_suspend>;
 
-		reset-gpio = <&tlmm 99 GPIO_ACTIVE_HIGH>;
-		irq-gpio = <&tlmm 125 GPIO_TRANSITORY>;
+		focaltech,reset-gpio = <&tlmm 99 GPIO_ACTIVE_HIGH>;
+		focaltech,irq-gpio = <&tlmm 125 GPIO_TRANSITORY>;
 		touchscreen-size-x = <1080>;
 		touchscreen-size-y = <2160>;
 		focaltech,max-touch-number = <5>;
