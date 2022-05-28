@@ -1047,6 +1047,74 @@ static inline bool ufshcd_is_wb_attrs(enum attr_idn idn)
 		idn <= QUERY_ATTR_IDN_CURR_WB_BUFF_SIZE;
 }
 
+static ssize_t boot_lun_enabled_show(struct device *dev,
+				     struct device_attribute *attr, char *buf)
+{
+	struct ufs_hba *hba = dev_get_drvdata(dev);
+	u32 slot;
+	int ret;
+	u8 index = 0;
+
+	down(&hba->host_sem);
+	if (!ufshcd_is_user_access_allowed(hba)) {
+		up(&hba->host_sem);
+		return -EBUSY;
+	}
+	ufshcd_rpm_get_sync(hba);
+
+	ret = ufshcd_query_attr(hba, UPIU_QUERY_OPCODE_READ_ATTR,
+		QUERY_ATTR_IDN_BOOT_LU_EN, index, 0, &slot);
+
+	ufshcd_rpm_put_sync(hba);
+	if (ret) {
+		ret = -EINVAL;
+		goto out;
+	}
+
+	ret = sysfs_emit(buf, "0x%08X\n", slot);
+out:
+	up(&hba->host_sem);
+	return ret;
+}
+
+static ssize_t boot_lun_enabled_store(struct device *dev,
+				      struct device_attribute *attr,
+				      const char *buf, size_t count)
+{
+	struct ufs_hba *hba = dev_get_drvdata(dev);
+	u32 slot;
+	int ret;
+	u8 index = 0;
+
+	if (kstrtouint(buf, 0, &slot) < 0)
+		return -EINVAL;
+	if (*buf != 1 && *buf != 2)
+		return -EINVAL;
+
+	down(&hba->host_sem);
+	if (!ufshcd_is_user_access_allowed(hba)) {
+		up(&hba->host_sem);
+		return -EBUSY;
+	}
+	ufshcd_rpm_get_sync(hba);
+
+	ret = ufshcd_query_attr_retry(hba, UPIU_QUERY_OPCODE_WRITE_ATTR,
+				      QUERY_ATTR_IDN_BOOT_LU_EN, index, 0, &slot);
+	if (slot == *buf) {
+		ret = -EINVAL;
+		goto out;
+	}
+
+	ufshcd_rpm_put_sync(hba);
+	if (ret) {
+		ret = -EINVAL;
+		goto out;
+	}
+out:
+	up(&hba->host_sem);
+	return ret ? ret : count;
+}
+
 #define UFS_ATTRIBUTE(_name, _uname)					\
 static ssize_t _name##_show(struct device *dev,				\
 	struct device_attribute *attr, char *buf)			\
@@ -1077,8 +1145,8 @@ out:									\
 	return ret;							\
 }									\
 static DEVICE_ATTR_RO(_name)
+static DEVICE_ATTR_RW(boot_lun_enabled);
 
-UFS_ATTRIBUTE(boot_lun_enabled, _BOOT_LU_EN);
 UFS_ATTRIBUTE(max_data_size_hpb_single_cmd, _MAX_HPB_SINGLE_CMD);
 UFS_ATTRIBUTE(current_power_mode, _POWER_MODE);
 UFS_ATTRIBUTE(active_icc_level, _ACTIVE_ICC_LVL);
