@@ -239,7 +239,6 @@
 	display_panel: panel@0 {
 		status = "disabled";
 		reg = <0>;
-
 		vddio-supply = <&vreg_l14a_1p8>;
 		vddpos-supply = <&lab>;
 		vddneg-supply = <&ibb>;
