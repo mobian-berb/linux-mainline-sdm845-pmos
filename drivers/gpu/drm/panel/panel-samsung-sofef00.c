@@ -44,8 +44,6 @@ struct sofef00_panel *to_sofef00_panel(struct drm_panel *panel)
 
 static void sofef00_panel_reset(struct sofef00_panel *ctx)
 {
-	if (!ctx->reset_gpio)
-		return;
 	gpiod_set_value_cansleep(ctx->reset_gpio, 0);
 	usleep_range(5000, 6000);
 	gpiod_set_value_cansleep(ctx->reset_gpio, 1);
@@ -139,8 +137,7 @@ static int sofef00_panel_prepare(struct drm_panel *panel)
 	ret = sofef00_panel_on(ctx);
 	if (ret < 0) {
 		dev_err(dev, "Failed to initialize panel: %d\n", ret);
-		if (ctx->reset_gpio)
-			gpiod_set_value_cansleep(ctx->reset_gpio, 1);
+		gpiod_set_value_cansleep(ctx->reset_gpio, 1);
 		return ret;
 	}
 
