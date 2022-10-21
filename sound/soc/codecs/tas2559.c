@@ -2240,7 +2240,7 @@ err:
 	return nResult;
 }
 
-static int tas2559_i2c_remove(struct i2c_client *pClient)
+static void tas2559_i2c_remove(struct i2c_client *pClient)
 {
 	struct tas2559_priv *pTAS2559 = i2c_get_clientdata(pClient);
 
@@ -2250,7 +2250,7 @@ static int tas2559_i2c_remove(struct i2c_client *pClient)
 	mutex_destroy(&pTAS2559->codec_lock);
 
 	mutex_destroy(&pTAS2559->dev_lock);
-	return 0;
+	return;
 }
 
 static const struct i2c_device_id tas2559_i2c_id[] = {
