@@ -350,7 +350,7 @@ static int samsung_s6e3fc2x01_probe(struct mipi_dsi_device *dsi)
 	return 0;
 }
 
-static int samsung_s6e3fc2x01_remove(struct mipi_dsi_device *dsi)
+static void samsung_s6e3fc2x01_remove(struct mipi_dsi_device *dsi)
 {
 	struct samsung_s6e3fc2x01 *ctx = mipi_dsi_get_drvdata(dsi);
 	int ret;
@@ -361,7 +361,7 @@ static int samsung_s6e3fc2x01_remove(struct mipi_dsi_device *dsi)
 
 	drm_panel_remove(&ctx->panel);
 
-	return 0;
+	return;
 }
 
 static const struct of_device_id samsung_s6e3fc2x01_of_match[] = {
