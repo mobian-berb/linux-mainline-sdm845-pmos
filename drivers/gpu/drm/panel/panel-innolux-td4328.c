@@ -301,7 +301,7 @@ static void td4328_shutdown(struct mipi_dsi_device *dsi)
 		dev_err(&dsi->dev, "Failed to disable panel: %d\n", ret);
 }
 
-static int td4328_remove(struct mipi_dsi_device *dsi)
+static void td4328_remove(struct mipi_dsi_device *dsi)
 {
 	struct td4328 *ctx = mipi_dsi_get_drvdata(dsi);
 	int ret;
@@ -313,8 +313,6 @@ static int td4328_remove(struct mipi_dsi_device *dsi)
 		dev_err(&dsi->dev, "Failed to detach from DSI host: %d\n", ret);
 
 	drm_panel_remove(&ctx->panel);
-
-	return 0;
 }
 
 static const struct of_device_id td4328_of_match[] = {
