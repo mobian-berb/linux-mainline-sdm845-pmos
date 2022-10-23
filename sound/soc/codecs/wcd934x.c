@@ -1919,8 +1919,8 @@ static void wcd934x_shutdown(struct snd_pcm_substream *substream,
 
 	dai_data = &wcd->dai[dai->id];
 
-	slim_stream_unprepare(dai_data->sruntime);
 	slim_stream_disable(dai_data->sruntime);
+	slim_stream_unprepare(dai_data->sruntime);
 }
 
 static int wcd934x_set_channel_map(struct snd_soc_dai *dai,
