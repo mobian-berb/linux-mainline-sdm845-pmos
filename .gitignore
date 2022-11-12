@@ -80,6 +80,8 @@ modules.order
 #
 !debian
 debian/upstream/signing-key.asc
+debian/changelog
+debian/control
 
 #
 # Snap directory (make snap-pkg)
