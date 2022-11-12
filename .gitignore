@@ -82,7 +82,13 @@ modules.order
 debian/upstream/signing-key.asc
 debian/changelog
 debian/control
-
+debian/files
+debian/patches
+debian/linux-*/
+debian/*.substvars
+debian/*.debhelper
+debian/debhelper-build-stamp
+debian/*.postinst
 #
 # Snap directory (make snap-pkg)
 #
